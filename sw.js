@@ -1,10 +1,11 @@
-const CACHE_NAME = 'english-practice-v2';
+const CACHE_NAME = 'english-practice-v3';
+const BASE = '/english-practice-app/';
 const ASSETS = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+  BASE,
+  BASE + 'index.html',
+  BASE + 'manifest.json',
+  BASE + 'icon-192.png',
+  BASE + 'icon-512.png'
 ];
 
 self.addEventListener('install', e => {
