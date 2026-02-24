@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Practice</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Assistant:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js">
+function updateMCQStageCount(){
+  const totalStages = Math.max(1, Math.ceil(words.length/10));
+  const el = document.getElementById('mcqMenuStages');
+  if(el) el.textContent = totalStages;
+}
+
+updateMCQStageCount();
+
+function updateWordCount(){
+  const el=document.getElementById('wordCount');
+  if(el) el.textContent = words.length;
+}
+
+updateWordCount();
+
+function showMCQSummary(){
+  const box=document.getElementById('mcqSummaryBox');
+  if(!box) return;
+  if(mcqMistakes.length===0){
+    box.innerHTML='🎉 לא היו טעויות בשלב הזה!';
+  }else{
+    box.innerHTML='<b>טעויות בשלב:</b><br>'+
+      mcqMistakes.map(w=>`• ${w.en} → ${w.he}`).join('<br>');
+  }
+  box.style.display='block';
+}
+
+
+function ensureSentencesCoverage(){
+  if(sentences.length >= words.length) return;
+
+  const existing = new Set(sentences.map(s=>s.word.toLowerCase()));
+  words.forEach(w=>{
+    if(!existing.has(w.en.toLowerCase())){
+      sentences.push({
+        word:w.en,
+        template:`I often use ______ in my daily life.`,
+        he:w.he
+      });
+    }
+  });
+}
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js">
+function updateMCQStageCount(){
+  const totalStages = Math.max(1, Math.ceil(words.length/10));
+  const el = document.getElementById('mcqMenuStages');
+  if(el) el.textContent = totalStages;
+}
+
+updateMCQStageCount();
+
+function updateWordCount(){
+  const el=document.getElementById('wordCount');
+  if(el) el.textContent = words.length;
+}
+
+updateWordCount();
+
+function showMCQSummary(){
+  const box=document.getElementById('mcqSummaryBox');
+  if(!box) return;
+  if(mcqMistakes.length===0){
+    box.innerHTML='🎉 לא היו טעויות בשלב הזה!';
+  }else{
+    box.innerHTML='<b>טעויות בשלב:</b><br>'+
+      mcqMistakes.map(w=>`• ${w.en} → ${w.he}`).join('<br>');
+  }
+  box.style.display='block';
+}
+
+
+function ensureSentencesCoverage(){
+  if(sentences.length >= words.length) return;
+
+  const existing = new Set(sentences.map(s=>s.word.toLowerCase()));
+  words.forEach(w=>{
+    if(!existing.has(w.en.toLowerCase())){
+      sentences.push({
+        word:w.en,
+        template:`I often use ______ in my daily life.`,
+        he:w.he
+      });
+    }
+  });
+}
+
+</script>
+<style>
+:root{
+  --bg:#0f1b2d;
+  --card:#1a2d4a;
+  --card2:#1f3660;
+  --accent:#f7c948;
+  --accent2:#4fc3f7;
+  --accent3:#ff7eb3;
+  --green:#56d48e;
+  --red:#ff5c6a;
+  --text:#e8f4ff;
+  --sub:#8ab4d4;
+  --radius:20px;
+  --radius-sm:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Assistant',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:0;overflow-x:hidden}
+
+/* Stars background */
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,#1a3a6a22 0%,transparent 60%),radial-gradient(ellipse at 80% 80%,#0d2a4422 0%,transparent 60%);pointer-events:none}
+
+.screen{display:none;min-height:100vh;padding:20px}
+.screen.active{display:flex;flex-direction:column}
+
+/* ====== MENU ====== */
+#menu{align-items:center;justify-content:center;gap:24px}
+.menu-title{font-family:'Fredoka One',cursive;font-size:42px;color:var(--accent);text-shadow:0 0 30px #f7c94866;letter-spacing:2px;text-align:center;margin-bottom:8px}
+.menu-sub{color:var(--sub);font-size:16px;text-align:center;margin-bottom:20px}
+.menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:100%;max-width:480px}
+.menu-card{
+  background:var(--card);
+  border:2px solid transparent;
+  padding:28px 16px;
+  border-radius:var(--radius);
+  text-align:center;
+  cursor:pointer;
+  transition:all .25s;
+  position:relative;
+  overflow:hidden;
+}
+.menu-card::before{content:'';position:absolute;inset:0;opacity:0;transition:.3s}
+.menu-card:hover{transform:translateY(-4px);border-color:var(--accent)}
+.menu-card:hover::before{opacity:1}
+.menu-card.c1::before{background:linear-gradient(135deg,#f7c94811,#f7c94822)}
+.menu-card.c2::before{background:linear-gradient(135deg,#4fc3f711,#4fc3f722)}
+.menu-card.c3::before{background:linear-gradient(135deg,#ff7eb311,#ff7eb322)}
+.menu-card.c4::before{background:linear-gradient(135deg,#56d48e11,#56d48e22)}
+.menu-icon{font-size:44px;margin-bottom:10px}
+.menu-label{font-size:17px;font-weight:700;color:var(--text)}
+.menu-desc{font-size:12px;color:var(--sub);margin-top:4px}
+
+/* ====== SHARED ====== */
+.top-bar{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.back-btn{background:var(--card);border:none;color:var(--sub);padding:10px 16px;border-radius:var(--radius-sm);cursor:pointer;font-size:16px;transition:.2s}
+.back-btn:hover{color:var(--text);background:var(--card2)}
+.mode-title{font-family:'Fredoka One',cursive;font-size:26px;color:var(--accent)}
+
+.stats-bar{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.stat-pill{background:var(--card);padding:8px 14px;border-radius:30px;font-size:14px;color:var(--sub)}
+.stat-pill span{color:var(--accent);font-weight:700}
+
+.progress-wrap{height:10px;background:var(--card);border-radius:10px;overflow:hidden;margin-bottom:20px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .4s;border-radius:10px}
+
+/* ====== MCQ ====== */
+#mcq{max-width:540px;margin:0 auto;width:100%}
+.question-card{background:var(--card);border-radius:var(--radius);padding:32px 24px;text-align:center;margin-bottom:20px;border:2px solid var(--card2)}
+.question-label{color:var(--sub);font-size:14px;margin-bottom:8px}
+.question-word{font-family:'Fredoka One',cursive;font-size:48px;color:var(--accent);letter-spacing:1px}
+.question-he{font-size:16px;color:var(--sub);margin-top:6px}
+.answers-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.ans-btn{
+  background:var(--card);border:2px solid var(--card2);color:var(--text);
+  padding:18px 10px;border-radius:var(--radius-sm);font-size:16px;font-weight:600;
+  cursor:pointer;transition:.2s;font-family:'Assistant',sans-serif;
+}
+.ans-btn:hover:not(:disabled){background:var(--card2);border-color:var(--accent2)}
+.ans-btn.correct{background:#1a4a2e;border-color:var(--green);color:var(--green)}
+.ans-btn.wrong{background:#4a1a1e;border-color:var(--red);color:var(--red)}
+.ans-btn:disabled{cursor:default}
+
+.stage-banner{background:linear-gradient(135deg,var(--card),var(--card2));border:2px solid var(--accent);border-radius:var(--radius);padding:24px;text-align:center;margin-bottom:20px;display:none}
+.stage-banner h2{font-family:'Fredoka One',cursive;font-size:30px;color:var(--accent);margin-bottom:8px}
+
+/* ====== SENTENCES ====== */
+#sentences{max-width:540px;margin:0 auto;width:100%}
+.sent-card{background:var(--card);border-radius:var(--radius);padding:28px 24px;margin-bottom:16px;border:2px solid var(--card2)}
+.sent-label{color:var(--sub);font-size:13px;margin-bottom:12px}
+.sent-text{font-size:22px;line-height:1.7;color:var(--text);direction:ltr;text-align:left}
+.sent-text .blank{display:inline-block;min-width:100px;color:var(--accent);font-weight:700;padding:0 8px;vertical-align:middle;background:#f7c94811;border-radius:6px}
+.sent-input{width:100%;padding:16px;font-size:18px;border-radius:var(--radius-sm);border:2px solid var(--card2);background:var(--card2);color:var(--text);outline:none;margin-top:16px;font-family:'Assistant',sans-serif;direction:ltr;transition:.2s}
+.sent-input:focus{border-color:var(--accent2)}
+.sent-input.correct-input{border-color:var(--green);background:#1a4a2e}
+.sent-input.wrong-input{border-color:var(--red);background:#4a1a1e}
+.sent-feedback{margin-top:12px;font-size:15px;min-height:24px;text-align:center;font-weight:600}
+.hint-box{background:var(--card2);border-radius:var(--radius-sm);padding:16px;margin-top:12px;display:none}
+.hint-box .hint-title{color:var(--sub);font-size:13px;margin-bottom:8px}
+.hint-opts{display:flex;gap:8px;flex-wrap:wrap}
+.hint-opt{background:var(--card);border:2px solid var(--card2);color:var(--text);padding:8px 14px;border-radius:30px;font-size:15px;cursor:pointer;font-family:'Assistant',sans-serif}
+.hint-opt:hover{border-color:var(--accent2);color:var(--accent2)}
+.action-row{display:flex;gap:10px;margin-top:14px}
+.btn{padding:14px 20px;border:none;border-radius:var(--radius-sm);font-size:16px;font-weight:700;cursor:pointer;font-family:'Assistant',sans-serif;transition:.2s;flex:1}
+.btn-primary{background:var(--accent);color:#0f1b2d}
+.btn-primary:hover{background:#f5d96e}
+.btn-secondary{background:var(--card2);color:var(--sub)}
+.btn-secondary:hover{color:var(--text);background:#2a4070}
+
+/* ====== AUDIO MODE ====== */
+#audio-mode{max-width:540px;margin:0 auto;width:100%;align-items:center}
+.audio-card{background:var(--card);border-radius:var(--radius);padding:36px 24px;text-align:center;margin-bottom:20px;border:2px solid var(--card2);width:100%}
+.speak-btn{
+  width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));
+  border:none;cursor:pointer;font-size:50px;margin:20px auto;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 40px #4fc3f744;transition:all .2s;
+}
+.speak-btn:hover{transform:scale(1.08);box-shadow:0 0 60px #4fc3f766}
+.speak-btn:active{transform:scale(.95)}
+.audio-word-he{font-size:30px;color:var(--text);font-weight:700;margin-bottom:8px}
+.audio-word-en{font-size:20px;color:var(--sub);display:none;margin-top:8px;direction:ltr}
+.reveal-btn{background:var(--card2);border:2px solid var(--card2);color:var(--sub);padding:12px 24px;border-radius:var(--radius-sm);cursor:pointer;font-size:16px;font-family:'Assistant',sans-serif;transition:.2s}
+.reveal-btn:hover{color:var(--text);border-color:var(--accent)}
+.audio-nav{display:flex;gap:12px;width:100%;margin-top:8px}
+
+/* ====== TEXT MODE ====== */
+#text-mode{max-width:540px;margin:0 auto;width:100%}
+.text-instructions{background:var(--card2);border-radius:var(--radius-sm);padding:16px;margin-bottom:16px;font-size:14px;color:var(--sub);direction:rtl}
+.text-instructions b{color:var(--accent)}
+.words-bank{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+.word-chip{background:var(--card2);border:1px solid var(--card2);color:var(--accent2);padding:6px 12px;border-radius:20px;font-size:14px;direction:ltr}
+.word-chip.used{opacity:.35;text-decoration:line-through}
+.text-area{width:100%;height:160px;padding:16px;font-size:17px;border-radius:var(--radius-sm);border:2px solid var(--card2);background:var(--card);color:var(--text);outline:none;resize:none;font-family:'Assistant',sans-serif;direction:ltr;line-height:1.8;transition:.2s}
+.text-area:focus{border-color:var(--accent2)}
+.text-feedback{margin-top:16px;background:var(--card2);border-radius:var(--radius-sm);padding:16px;display:none}
+.text-feedback-title{color:var(--accent);font-weight:700;margin-bottom:10px;font-size:16px}
+.correction-line{margin-bottom:8px;font-size:14px;direction:ltr;line-height:1.6}
+.err-word{background:#4a1a1e;color:var(--red);padding:2px 6px;border-radius:4px;text-decoration:line-through}
+.corr-word{background:#1a4a2e;color:var(--green);padding:2px 6px;border-radius:4px}
+.ok-line{color:var(--green);font-size:14px}
+
+/* ====== CELEBRATION ====== */
+@keyframes pop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.celebrate{animation:pop .4s ease-out}
+.floating{animation:float 2s ease-in-out infinite}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .3s ease}
+
+.round-end{background:var(--card);border:2px solid var(--accent);border-radius:var(--radius);padding:32px;text-align:center;display:none}
+.round-end h2{font-family:'Fredoka One',cursive;font-size:32px;color:var(--accent);margin-bottom:12px}
+.round-score{font-size:48px;font-family:'Fredoka One',cursive;color:var(--accent2);margin:12px 0}
+.round-end p{color:var(--sub);margin-bottom:20px}
+
+/* ====== TIMER ====== */
+.timer-btn{
+  background:var(--card2);border:2px solid var(--accent);color:var(--accent);
+  padding:7px 14px;border-radius:30px;cursor:pointer;font-size:14px;font-weight:700;
+  font-family:'Assistant',sans-serif;transition:.2s;white-space:nowrap;
+}
+.timer-btn:hover{background:var(--accent);color:#0f1b2d}
+.timer-btn.running{background:#1a4a2e;border-color:var(--green);color:var(--green)}
+</style>
+</head>
+<body>
+
+<!-- MENU -->
+<div id="menu" class="screen active">
+  <div class="menu-title floating">✨ English Practice</div>
+  <div class="menu-sub" id="menuSub"><span id="wordCount">111</span> מילים | 4 מצבי תרגול</div>
+  <div class="menu-grid">
+    <div class="menu-card c1" onclick="startMCQ()">
+      <div class="menu-icon">🧠</div>
+      <div class="menu-label">רב ברירה</div>
+      <div class="menu-desc"><span id="mcqMenuStages">10</span> שלבים × 10 שאלות</div>
+    </div>
+    <div class="menu-card c2" onclick="startSentences()">
+      <div class="menu-icon">✍️</div>
+      <div class="menu-label">השלמת משפטים</div>
+      <div class="menu-desc">כתוב את המילה החסרה</div>
+    </div>
+    <div class="menu-card c3" onclick="startAudio()">
+      <div class="menu-icon">🔊</div>
+      <div class="menu-label">השמעת מילים</div>
+      <div class="menu-desc">שמע, זכור, גלה</div>
+    </div>
+    <div class="menu-card c4" onclick="startText()">
+      <div class="menu-icon">📝</div>
+      <div class="menu-label">כתיבה חופשית</div>
+      <div class="menu-desc">כתוב משפטים ותוקנו</div>
+    </div>
+  </div>
+  <div style="margin-top:18px;width:100%;max-width:480px">
+    <div class="menu-card" style="grid-column:1/-1;border:2px dashed var(--accent2);background:transparent" onclick="showCustomWords()">
+      <div class="menu-icon">📂</div>
+      <div class="menu-label" style="color:var(--accent2)">טען רשימת מילים משלך</div>
+      <div class="menu-desc">הדבק מילים ותרגולים יתאימו להן</div>
+    </div>
+  </div>
+</div>
+
+<!-- CUSTOM WORDS -->
+<div id="custom-words" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="goMenu()">← תפריט</button>
+    <div class="mode-title">📂 רשימת מילים משלך</div>
+  </div>
+
+  <!-- File upload -->
+  <div style="background:var(--card);border:2px dashed var(--accent2);border-radius:var(--radius-sm);padding:16px;margin-bottom:12px;text-align:center;cursor:pointer" onclick="document.getElementById('fileUpload').click()">
+    <div style="font-size:32px;margin-bottom:6px">📄</div>
+    <div style="color:var(--accent2);font-weight:700;font-size:15px">העלה קובץ Word / PDF / TXT</div>
+    <div style="color:var(--sub);font-size:12px;margin-top:4px">לחץ לבחירת קובץ מהמחשב או הטלפון</div>
+    <input type="file" id="fileUpload" accept=".txt,.docx,.doc,.pdf" style="display:none" onchange="handleFileUpload(event)">
+  </div>
+  <div id="fileStatus" style="text-align:center;font-size:13px;color:var(--accent);margin-bottom:8px;min-height:18px"></div>
+
+  <div style="text-align:center;color:var(--sub);font-size:13px;margin-bottom:8px">— או הדבק טקסט ישירות —</div>
+
+  <div style="background:var(--card2);border-radius:var(--radius-sm);padding:12px;margin-bottom:10px;font-size:13px;color:var(--sub);direction:rtl;line-height:1.7">
+    פורמט: <b style="color:var(--accent)">אנגלית = עברית</b> &nbsp;|&nbsp;
+    <b style="color:var(--accent)">אנגלית - עברית</b> &nbsp;|&nbsp;
+    <b style="color:var(--accent)">אנגלית : עברית</b>
+  </div>
+  <textarea id="customInput" style="width:100%;height:180px;padding:14px;font-size:15px;border-radius:var(--radius-sm);border:2px solid var(--card2);background:var(--card);color:var(--text);outline:none;resize:none;font-family:'Assistant',sans-serif;direction:ltr;line-height:1.8;transition:.2s" placeholder="feather = נוצה&#10;fur = פרווה&#10;mud = בוץ&#10;adventure = הרפתקאה"></textarea>
+  <div id="customFeedback" style="margin:10px 0;font-size:14px;color:var(--sub);text-align:center;min-height:20px"></div>
+
+  <!-- Loading indicator -->
+  <div id="customLoading" style="display:none;text-align:center;padding:20px">
+    <div style="font-size:32px;animation:float 1.5s ease-in-out infinite">⚙️</div>
+    <div style="color:var(--accent2);font-size:16px;margin-top:10px">יוצר משפטים לתרגול...</div>
+    <div id="loadingProgress" style="color:var(--sub);font-size:13px;margin-top:6px"></div>
+  </div>
+
+  <div id="customBtns" style="display:flex;gap:10px;margin-top:4px">
+    <button class="btn btn-primary" onclick="loadCustomWords()" style="flex:2">✓ טען מילים ותתחיל</button>
+    <button class="btn btn-secondary" onclick="resetToDefault()" style="flex:1">↺ ברירת מחדל</button>
+  </div>
+
+  <!-- API Key section -->
+  <div style="margin-top:16px;background:var(--card2);border-radius:var(--radius-sm);padding:14px;direction:rtl">
+    <div style="font-size:13px;color:var(--sub);margin-bottom:8px">
+      🤖 <b style="color:var(--accent2)">AI ליצירת משפטים חכמים (אופציונלי)</b><br>
+      <span style="font-size:12px">עם מפתח API — המשפטים יהיו מותאמים לכל מילה ספציפית.</span>
+    </div>
+    <input id="apiKeyInput" type="password"
+      placeholder="sk-ant-api03-..."
+      style="width:100%;padding:10px 12px;font-size:13px;border-radius:8px;border:2px solid var(--card2);background:var(--card);color:var(--text);outline:none;font-family:monospace;direction:ltr"
+      oninput="saveApiKey(this.value)">
+    <div style="font-size:11px;color:var(--sub);margin-top:6px;text-align:center">
+      המפתח נשמר רק בדפדפן שלך ולא נשלח לשום שרת •
+      <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent2)">קבל מפתח</a>
+    </div>
+  </div>
+</div>
+
+<!-- MCQ -->
+<div id="mcq" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="goMenu()">← תפריט</button>
+    <div class="mode-title">🧠 רב ברירה</div>
+    <div style="margin-right:auto;display:flex;align-items:center;gap:8px">
+      <div class="timer-display" id="mcqTimerDisplay" style="font-family:'Fredoka One',cursive;font-size:22px;color:var(--accent);min-width:56px;text-align:center">00:00</div>
+      <button class="timer-btn" id="mcqTimerBtn" onclick="toggleTimer('mcq')">▶ שעון</button>
+    </div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-pill">שלב <span id="mcqStage">1</span>/<span id="mcqStageTotal">1</span></div>
+    <div class="stat-pill">שאלה <span id="mcqQ">0</span>/10</div>
+    <div class="stat-pill">שלב: <span id="mcqStageScore">0</span></div>
+    <div class="stat-pill">סה"כ: <span id="mcqTotal">0</span></div>
+  </div>
+  <div class="progress-wrap"><div class="progress-fill" id="mcqBar" style="width:0%"></div></div>
+
+  <div class="round-end" id="mcqRound">
+    <div id="mcqSummaryBox" style="display:none;margin-bottom:16px;text-align:right;background:var(--card2);padding:12px;border-radius:12px;font-size:14px"></div>
+    <h2>🎉 סיום שלב!</h2>
+    <div class="round-score" id="mcqRoundScore"></div>
+    <p id="mcqRoundMsg"></p>
+    <div style="color:var(--accent2);font-size:16px;margin-bottom:16px">⏱ זמן השלב: <b id="mcqRoundTime">--:--</b></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-secondary" onclick="showMCQSummary()" style="border:2px solid var(--accent2);color:var(--accent2)">📋 סיכום טעויות</button>
+      <button class="btn btn-primary" onclick="continueMCQ()">המשך לשלב הבא ▶</button>
+      <button class="btn btn-secondary" id="mcqRetryBtn" onclick="retryMCQ()" style="border:2px solid var(--accent3);color:var(--accent3)">🔁 חזור על השלב הזה</button>
+    </div>
+  </div>
+
+  <div id="mcqPlay">
+    <div class="question-card fade-in">
+      <div class="question-label">תרגם לעברית 👇</div>
+      <div class="question-word" id="mcqWord">word</div>
+    </div>
+    <div class="answers-grid" id="mcqAnswers"></div>
+  </div>
+</div>
+
+<!-- SENTENCES -->
+<div id="sentences" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="goMenu()">← תפריט</button>
+    <div class="mode-title">✍️ השלמת משפטים</div>
+    <div style="margin-right:auto;display:flex;align-items:center;gap:8px">
+      <div class="timer-display" id="sentTimerDisplay" style="font-family:'Fredoka One',cursive;font-size:22px;color:var(--accent);min-width:56px;text-align:center">00:00</div>
+      <button class="timer-btn" id="sentTimerBtn" onclick="toggleTimer('sent')">▶ שעון</button>
+    </div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-pill">שלב <span id="sentStage">1</span>/<span id="sentStageTotal">1</span></div>
+    <div class="stat-pill">שאלה <span id="sentQ">0</span>/10</div>
+    <div class="stat-pill">שלב: <span id="sentScore">0</span> נק'</div>
+    <div class="stat-pill">סה"כ: <span id="sentTotal">0</span> נק'</div>
+  </div>
+  <div style="font-size:12px;color:var(--sub);margin-bottom:10px;text-align:center">ניקוד: ✅ נכון=3נק' | 💡רמז1+נכון=2נק' | 💡💡רמז2+נכון=1נק'</div>
+  <div class="progress-wrap"><div class="progress-fill" id="sentBar" style="width:0%"></div></div>
+
+  <div class="round-end" id="sentRound">
+    <h2>🎉 סיום שלב!</h2>
+    <div class="round-score" id="sentRoundScore"></div>
+    <p id="sentRoundMsg"></p>
+    <div style="color:var(--accent2);font-size:16px;margin-bottom:16px">⏱ זמן השלב: <b id="sentRoundTime">--:--</b></div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button class="btn btn-primary" onclick="continueSent()">המשך לשלב הבא ▶</button>
+      <button class="btn btn-secondary" id="sentRetryBtn" onclick="retrySent()" style="border:2px solid var(--accent3);color:var(--accent3)">🔁 חזור על השלב הזה</button>
+    </div>
+  </div>
+
+  <div id="sentPlay">
+    <div class="sent-card">
+      <div class="sent-label">השלם את המשפט עם המילה המתאימה (באנגלית)</div>
+      <div class="sent-text" id="sentText"></div>
+      <input class="sent-input" id="sentInput" placeholder="Type the missing word..." dir="ltr" onkeydown="if(event.key==='Enter')checkSent()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <div class="sent-feedback" id="sentFeedback"></div>
+    </div>
+    <div class="hint-box" id="hintBox">
+      <div class="hint-title" id="hintTitle">💡 רמז 1 – תרגום:</div>
+      <div class="hint-opts" id="hintOpts"></div>
+    </div>
+    <div style="text-align:center;margin-bottom:6px;font-size:13px;color:var(--sub)" id="hintInfo"></div>
+    <div class="action-row">
+      <button class="btn btn-primary" onclick="checkSent()">✓ בדוק</button>
+      <button class="btn btn-secondary" id="hintBtn" onclick="showSentHint()">💡 רמז 1</button>
+      <button class="btn btn-secondary" onclick="skipSent()">דלג ▶</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUDIO -->
+<div id="audio-mode" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="goMenu()">← תפריט</button>
+    <div class="mode-title">🔊 השמעת מילים</div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-pill">מילה <span id="audioIdx">1</span>/<span id="audioTotal">111</span></div>
+  </div>
+  <div class="audio-card">
+    <div style="color:var(--sub);font-size:13px;margin-bottom:6px">מילה באנגלית</div>
+    <div class="audio-word-he" id="audioEn" style="font-family:'Fredoka One',cursive;font-size:36px;color:var(--accent);direction:ltr">טוען...</div>
+    <button class="speak-btn" onclick="speakCurrent()" title="השמע מילה">🔊</button>
+    <div style="color:var(--sub);font-size:14px;margin-bottom:16px">לחץ להשמעה</div>
+    <button class="reveal-btn" id="audioRevealBtn" onclick="toggleReveal()">הצג תרגום עברי 👁</button>
+    <div id="audioHe" style="font-size:26px;color:var(--accent2);font-weight:700;margin-top:14px;display:none"></div>
+  </div>
+  <div class="audio-nav">
+    <button class="btn btn-secondary" onclick="audioPrev()">◀ הקודם</button>
+    <button class="btn btn-primary" onclick="audioNext()">הבא ▶</button>
+  </div>
+  <div style="margin-top:16px;text-align:center">
+    <button class="btn btn-secondary" onclick="audioShuffle()" style="max-width:200px">🔀 ערבב</button>
+  </div>
+</div>
+
+<!-- TEXT -->
+<div id="text-mode" class="screen">
+  <div class="top-bar">
+    <button class="back-btn" onclick="goMenu()">← תפריט</button>
+    <div class="mode-title">📝 כתיבה חופשית</div>
+  </div>
+  <div class="text-instructions">
+    כתוב <b>2 שורות</b> באנגלית עם המילים שלמדת. נסה להשתמש לפחות ב-<b>3 מילים מהרשימה</b>. המערכת תתקן שגיאות ותסמן מילים נכונות מהרשימה! 🌟
+  </div>
+  <div style="color:var(--sub);font-size:13px;margin-bottom:8px">מילים זמינות (מהרשימה):</div>
+  <div class="words-bank" id="wordBank"></div>
+  <textarea class="text-area" id="freeText" placeholder="Write 2 lines using the vocabulary words..." maxlength="600"></textarea>
+  <div class="action-row" style="margin-top:12px">
+    <button class="btn btn-primary" onclick="checkFreeText()">✓ תקן</button>
+    <button class="btn btn-secondary" onclick="clearText()">🗑 נקה</button>
+  </div>
+  <div class="text-feedback" id="textFeedback"></div>
+</div>
+
+<script>
+const words=[
+{en:"another",he:"אחר"},
+{en:"expert",he:"מומחה"},
+{en:"fall asleep",he:"להירדם"},
+{en:"feather",he:"נוצה"},
+{en:"fur",he:"פרווה"},
+{en:"make sure",he:"לוודא"},
+{en:"mud",he:"בוץ"},
+{en:"protect",he:"להגן"},
+{en:"sand",he:"חול"},
+{en:"scale",he:"משקל"},
+{en:"sunburn",he:"כוויה"},
+{en:"sunscreen",he:"קרם הגנה"},
+{en:"take care of",he:"לדאוג ל"},
+{en:"throw",he:"לזרוק"},
+{en:"wool",he:"צמר"},
+{en:"you're welcome",he:"על לא דבר"},
+{en:"activity",he:"פעילות"},
+{en:"adventure",he:"הרפתקאה"},
+{en:"art",he:"אומנות"},
+{en:"athlete",he:"אתלט"},
+{en:"change",he:"לשנות"},
+{en:"company",he:"חברה"},
+{en:"competition",he:"תחרות"},
+{en:"creative",he:"יצירתי"},
+{en:"date of birth",he:"תאריך לידה"},
+{en:"excellent",he:"מצויין"},
+{en:"free",he:"חופשי, חינם"},
+{en:"get hurt",he:"להיפגע"},
+{en:"in charge of",he:"אחראי על"},
+{en:"look for",he:"לחפש"},
+{en:"pay attention",he:"לשים לב"},
+{en:"show",he:"להראות"},
+{en:"sign",he:"סימן"},
+{en:"sit still",he:"לשבת בשקט"},
+{en:"start up",he:"חברת הזנק"},
+{en:"tidy",he:"מסודר"},
+{en:"tour guide",he:"מדריך טיולים"},
+{en:"travel",he:"לטייל"},
+{en:"aim",he:"כוונה"},
+{en:"beginning",he:"התחלה"},
+{en:"celebrate",he:"לחגוג"},
+{en:"choose",he:"לבחור"},
+{en:"countryside",he:"כפרי"},
+{en:"download",he:"להוריד"},
+{en:"event",he:"ארוע"},
+{en:"exciting",he:"מרגש"},
+{en:"excuse",he:"תירוץ"},
+{en:"expensive",he:"יקר"},
+{en:"festival",he:"פסטיבל"},
+{en:"follow",he:"לעקוב"},
+{en:"imagine",he:"לדמיין"},
+{en:"in addition to",he:"בנוסף ל"},
+{en:"in order to",he:"כדי"},
+{en:"left out",he:"נשאר בחוץ"},
+{en:"light",he:"אור"},
+{en:"main",he:"ראשי, עיקרי"},
+{en:"perfect",he:"מושלם"},
+{en:"pour",he:"למזוג"},
+{en:"route",he:"דרך, מסלול"},
+{en:"seem",he:"נראה"},
+{en:"success",he:"הצלחה"},
+{en:"suggestion",he:"הצעה"},
+{en:"surprise",he:"להפתיע"},
+{en:"take part",he:"לקחת חלק"},
+{en:"take place",he:"להתרחש"},
+{en:"team",he:"קבוצה"},
+{en:"tradition",he:"מסורת"},
+{en:"visit",he:"לבקר"},
+{en:"visitor",he:"מבקר"},
+{en:"be used to",he:"רגיל ל"},
+{en:"both and",he:"גם וגם"},
+{en:"because of",he:"בגלל"},
+{en:"concentrate",he:"להתרכז"},
+{en:"darkness",he:"חשכה"},
+{en:"during",he:"במשך"},
+{en:"get around",he:"להסתדר"},
+{en:"get up",he:"לקום"},
+{en:"go for a hike",he:"ללכת לטיול"},
+{en:"lake",he:"אגם"},
+{en:"midnight",he:"חצות"},
+{en:"million",he:"מיליון"},
+{en:"rent",he:"לשכור"},
+{en:"skate",he:"להחליק"},
+{en:"sunlight",he:"אור שמש"},
+{en:"tour",he:"לטייל"},
+{en:"tourist",he:"תייר"},
+{en:"turn into",he:"להפוך ל"},
+{en:"unusual",he:"לא רגיל"},
+{en:"whatever",he:"לא משנה מה"},
+{en:"worry about",he:"לדאוג ל"},
+{en:"carefully",he:"בזהירות"},
+{en:"collect",he:"לאסוף"},
+{en:"create",he:"ליצור"},
+{en:"dead",he:"מת"},
+{en:"drown",he:"לטבוע"},
+{en:"escape",he:"להימלט"},
+{en:"evil",he:"רשע"},
+{en:"feel sorry about",he:"מרחם על"},
+{en:"god",he:"אלוהים"},
+{en:"guard",he:"לשמור"},
+{en:"inventor",he:"ממציא"},
+{en:"island",he:"אי"},
+{en:"pleased",he:"מרוצה"},
+{en:"prison",he:"כלא"},
+{en:"sculpture",he:"פסל"},
+{en:"string",he:"חוט"},
+{en:"tie",he:"לקשור"},
+{en:"towards",he:"לכיוון"},
+{en:"warn",he:"להזהיר"},
+{en:"wax",he:"שעווה"},
+{en:"wing",he:"כנף"}
+];
+
+// sentences for mode 2 — one per word (using word in blank)
+const sentences=[
+{word:"another",template:"I need ______ pencil, this one is broken.",he:"עוד"},
+{word:"expert",template:"She is an ______ in science.",he:"מומחה"},
+{word:"fall asleep",template:"I always ______ during movies.",he:"להירדם"},
+{word:"feather",template:"The bird lost a ______ from its wing.",he:"נוצה"},
+{word:"fur",template:"The cat has very soft ______.",he:"פרווה"},
+{word:"make sure",template:"Please ______ the door is locked.",he:"לוודא"},
+{word:"mud",template:"The children played in the ______ after the rain.",he:"בוץ"},
+{word:"protect",template:"Sunscreen helps ______ your skin.",he:"להגן"},
+{word:"sand",template:"We built a castle in the ______.",he:"חול"},
+{word:"scale",template:"Step on the ______ to check your weight.",he:"משקל"},
+{word:"sunburn",template:"He got a bad ______ at the beach.",he:"כוויה"},
+{word:"sunscreen",template:"Always wear ______ on a sunny day.",he:"קרם הגנה"},
+{word:"take care of",template:"She will ______ the dog while we travel.",he:"לדאוג ל"},
+{word:"throw",template:"Can you ______ the ball to me?",he:"לזרוק"},
+{word:"wool",template:"This sweater is made of warm ______.",he:"צמר"},
+{word:"activity",template:"Swimming is my favourite ______.",he:"פעילות"},
+{word:"adventure",template:"Hiking in the mountains was a great ______.",he:"הרפתקאה"},
+{word:"art",template:"She studies ______ at school.",he:"אומנות"},
+{word:"athlete",template:"He is a professional ______ who runs every day.",he:"אתלט"},
+{word:"change",template:"I need to ______ my shoes before gym class.",he:"לשנות"},
+{word:"company",template:"She works for a big technology ______.",he:"חברה"},
+{word:"competition",template:"We won first place in the ______.",he:"תחרות"},
+{word:"creative",template:"She is very ______ and loves painting.",he:"יצירתי"},
+{word:"excellent",template:"You did an ______ job on the test!",he:"מצויין"},
+{word:"get hurt",template:"Be careful, you might ______!",he:"להיפגע"},
+{word:"look for",template:"I always ______ my keys in the morning.",he:"לחפש"},
+{word:"pay attention",template:"Please ______ when the teacher is speaking.",he:"לשים לב"},
+{word:"tidy",template:"My room is always ______ and clean.",he:"מסודר"},
+{word:"tour guide",template:"The ______ showed us the ancient city.",he:"מדריך טיולים"},
+{word:"travel",template:"I love to ______ to new countries.",he:"לטייל"},
+{word:"beginning",template:"The ______ of the book is very exciting.",he:"התחלה"},
+{word:"celebrate",template:"We will ______ her birthday tonight.",he:"לחגוג"},
+{word:"choose",template:"You can ______ any colour you like.",he:"לבחור"},
+{word:"exciting",template:"The football match was really ______.",he:"מרגש"},
+{word:"expensive",template:"This watch is very ______.",he:"יקר"},
+{word:"festival",template:"We went to a music ______ last summer.",he:"פסטיבל"},
+{word:"follow",template:"Please ______ the instructions carefully.",he:"לעקוב"},
+{word:"imagine",template:"Close your eyes and ______ a beautiful place.",he:"לדמיין"},
+{word:"perfect",template:"The weather today is ______.",he:"מושלם"},
+{word:"pour",template:"Can you ______ some water into my glass?",he:"למזוג"},
+{word:"route",template:"We took a scenic ______ through the forest.",he:"מסלול"},
+{word:"success",template:"Hard work leads to ______.",he:"הצלחה"},
+{word:"suggestion",template:"Do you have a ______ for a good restaurant?",he:"הצעה"},
+{word:"take part",template:"Everyone is welcome to ______ in the game.",he:"לקחת חלק"},
+{word:"team",template:"Our football ______ won the championship.",he:"קבוצה"},
+{word:"tradition",template:"Lighting candles is a family ______.",he:"מסורת"},
+{word:"visit",template:"We plan to ______ Rome next summer.",he:"לבקר"},
+{word:"visitor",template:"A ______ came to our school today.",he:"מבקר"},
+{word:"concentrate",template:"Turn off the music so I can ______.",he:"להתרכז"},
+{word:"darkness",template:"He was afraid of the ______ in the room.",he:"חשכה"},
+{word:"during",template:"We ate popcorn ______ the movie.",he:"במשך"},
+{word:"lake",template:"We swam in the cool mountain ______.",he:"אגם"},
+{word:"midnight",template:"The party ended at ______.",he:"חצות"},
+{word:"rent",template:"We will ______ a boat for the day.",he:"לשכור"},
+{word:"skate",template:"She learned to ______ on ice last winter.",he:"להחליק"},
+{word:"sunlight",template:"The room was full of warm ______.",he:"אור שמש"},
+{word:"tourist",template:"Every ______ wants to see the Eiffel Tower.",he:"תייר"},
+{word:"unusual",template:"It is ______ to see snow in April.",he:"לא רגיל"},
+{word:"carefully",template:"She ______ carried the baby.",he:"בזהירות"},
+{word:"collect",template:"I ______ stamps from different countries.",he:"לאסוף"},
+{word:"create",template:"She used recycled materials to ______ art.",he:"ליצור"},
+{word:"escape",template:"The prisoner managed to ______ from jail.",he:"להימלט"},
+{word:"guard",template:"A soldier will ______ the gate all night.",he:"לשמור"},
+{word:"inventor",template:"Thomas Edison was a famous ______.",he:"ממציא"},
+{word:"island",template:"We sailed to a small ______ in the sea.",he:"אי"},
+{word:"pleased",template:"The teacher was ______ with our work.",he:"מרוצה"},
+{word:"prison",template:"He was sent to ______ for ten years.",he:"כלא"},
+{word:"sculpture",template:"There is a beautiful marble ______ in the park.",he:"פסל"},
+{word:"warn",template:"I tried to ______ him about the danger.",he:"להזהיר"},
+{word:"wing",template:"The bird broke its ______ and could not fly.",he:"כנף"},
+];
+
+function shuffle(arr){return [...arr].sort(()=>Math.random()-.5)}
+
+// Timer state - declared early so goMenu can reference it
+const timers={
+  mcq:{interval:null,seconds:0,running:false},
+  sent:{interval:null,seconds:0,running:false},
+  audio:{interval:null,seconds:0,running:false},
+  text:{interval:null,seconds:0,running:false}
+};
+
+function goMenu(){
+  ['mcq','sent'].forEach(k=>{
+    const t=timers[k];
+    if(t&&t.running){
+      clearInterval(t.interval);t.running=false;
+      const btn=document.getElementById(k+'TimerBtn');
+      if(btn){btn.textContent='▶ שעון';btn.classList.remove('running');}
+    }
+  });
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('menu').classList.add('active');
+}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active')}
+
+// ========== MCQ ==========
+let mcqPool=[], mcqStage=1, mcqQNum=0, mcqStageScore=0, mcqTotalScore=0, mcqMistakes=[], mcqUsed=new Set();
+let mcqAnswered=false;
+let mcqStageWords=[]; // tracks exact 10 words shown this stage
+
+// cycle tracking
+let mcqCycle=[];
+let mcqCycleIndex=0;
+
+function startMCQ(){
+  // create full cycle once
+  mcqCycle = shuffle([...words]);
+  mcqCycleIndex = 0;
+
+  mcqPool=[];
+  mcqUsed=new Set();
+  mcqStage=1; mcqQNum=0; mcqStageScore=0; mcqTotalScore=0; mcqMistakes=[];
+  mcqStageWords=[];
+  document.getElementById('mcqRound').style.display='none';
+  document.getElementById('mcqPlay').style.display='block';
+  resetTimer('mcq');
+  show('mcq');
+  mcqNext();
+}
+
+function mcqNext(){
+  if(mcqQNum>=10){
+    showMCQRound(); return;
+  }
+  // ===== ensure batches without repetition =====
+  if(mcqPool.length===0){
+
+    // if finished full cycle → reshuffle ALL words
+    if(mcqCycleIndex >= mcqCycle.length){
+      mcqCycle = shuffle([...words]);
+      mcqCycleIndex = 0;
+    }
+
+    const remaining = mcqCycle.length - mcqCycleIndex;
+    const take = Math.min(10, remaining);
+
+    mcqPool = mcqCycle.slice(mcqCycleIndex, mcqCycleIndex + take);
+    mcqCycleIndex += take;
+  }
+
+  const w = mcqPool.shift();
+  mcqUsed.add(w.en);
+  mcqStageWords.push(w);
+  window._mcqCurrent=w;
+  mcqAnswered=false;
+
+  document.getElementById('mcqWord').textContent=w.en;
+
+  // auto-start timer on first question of stage
+  if(mcqQNum===0 && !timers.mcq.running){
+    toggleTimer('mcq');
+  }
+  document.getElementById('mcqWord').className='question-word';
+
+  let opts=[w.he];
+  let pool=words.filter(x=>x.he!==w.he);
+  shuffle(pool).slice(0,3).forEach(x=>opts.push(x.he));
+  opts=shuffle(opts);
+
+  const div=document.getElementById('mcqAnswers');
+  div.innerHTML='';
+  opts.forEach(o=>{
+    const b=document.createElement('button');
+    b.className='ans-btn'; b.textContent=o;
+    b.onclick=()=>handleMCQ(b,o,w.he,w);
+    div.appendChild(b);
+  });
+  updateMCQUI();
+}
+
+function handleMCQ(btn,selected,correct,w){
+  if(mcqAnswered) return;
+  mcqAnswered=true;
+  document.querySelectorAll('.ans-btn').forEach(b=>b.disabled=true);
+  if(selected===correct){
+    btn.classList.add('correct');
+    mcqStageScore++; mcqTotalScore++;
+  } else {
+    btn.classList.add('wrong');
+    mcqMistakes.push(w);
+    document.querySelectorAll('.ans-btn').forEach(b=>{if(b.textContent===correct)b.classList.add('correct');});
+  }
+  mcqQNum++;
+
+  // if last question answered, stop timer
+  if(mcqQNum>=10){
+    pauseTimer('mcq');
+  }
+  updateMCQUI();
+  setTimeout(mcqNext, 900);
+}
+
+function showMCQRound(){
+  pauseTimer('mcq');
+  document.getElementById('mcqPlay').style.display='none';
+  const r=document.getElementById('mcqRound');
+  r.style.display='block';
+  document.getElementById('mcqRoundScore').textContent=mcqStageScore+'/10';
+  document.getElementById('mcqRoundMsg').textContent=mcqStageScore>=8?'מצויין! 🌟':mcqStageScore>=5?'כל הכבוד! המשך לתרגל 💪':'נסה שוב, אתה יכול! 🔁';
+  document.getElementById('mcqRoundTime').textContent=getTimerDisplay('mcq');
+}
+
+function retryMCQ(){
+  // Replay exact same 10 words in shuffled order
+  mcqPool=shuffle([...mcqStageWords]);
+  mcqStageWords=[];
+  mcqQNum=0; mcqStageScore=0; mcqMistakes=[];
+  document.getElementById('mcqRound').style.display='none';
+  document.getElementById('mcqPlay').style.display='block';
+  resetTimer('mcq');
+  mcqNext();
+}
+
+function continueMCQ(){
+  mcqStage++; mcqQNum=0; mcqStageScore=0; mcqStageWords=[];
+  document.getElementById('mcqRound').style.display='none';
+  document.getElementById('mcqPlay').style.display='block';
+  resetTimer('mcq');
+  if(mcqStage>10){alert('🎊 סיימת את כל השלבים! מתחיל מחדש...');mcqStage=1;mcqTotalScore=0;}
+  mcqNext();
+}
+
+function updateMCQUI(){
+  document.getElementById('mcqStage').textContent=mcqStage;
+
+  // update stage total based on word count
+  const totalStages = Math.max(1, Math.ceil(words.length/10));
+  const totalEl = document.getElementById('mcqStageTotal');
+  if(totalEl) totalEl.textContent = totalStages;
+  document.getElementById('mcqQ').textContent=mcqQNum;
+  document.getElementById('mcqStageScore').textContent=mcqStageScore;
+  document.getElementById('mcqTotal').textContent=mcqTotalScore;
+  document.getElementById('mcqBar').style.width=(mcqQNum/10*100)+'%';
+}
+
+// ========== SENTENCES ==========
+let sentPool=[], sentIdx=0, sentStageNum=1, sentQNum=0, sentStageScore=0, sentTotalScore=0;
+// cycle tracking for no-repeat
+let sentCycle=[];
+let sentCycleIndex=0;
+let sentAnswered=false, sentHintLevel=0;
+let sentStageSentences=[]; // tracks exact 10 sentences shown this stage
+
+function startSentences(){
+  ensureSentencesCoverage();
+
+  // create full cycle
+  sentCycle = shuffle([...sentences]);
+  sentCycleIndex = 0;
+
+  sentPool=[];
+
+  sentIdx=0; sentStageNum=1; sentQNum=0; sentStageScore=0; sentTotalScore=0;
+  sentStageSentences=[];
+  document.getElementById('sentRound').style.display='none';
+  document.getElementById('sentPlay').style.display='block';
+  document.getElementById('hintBox').style.display='none';
+  resetTimer('sent');
+  show('sentences');
+  loadSent();
+}
+
+function loadSent(){
+  if(sentQNum>=10){showSentRound();return;}
+  // ensure no repetition until full cycle finished
+  if(sentPool.length===0){
+    if(sentCycleIndex >= sentCycle.length){
+      sentCycle = shuffle([...sentences]);
+      sentCycleIndex = 0;
+    }
+    const remaining = sentCycle.length - sentCycleIndex;
+    const take = Math.min(10, remaining);
+    sentPool = sentCycle.slice(sentCycleIndex, sentCycleIndex + take);
+    sentCycleIndex += take;
+    sentIdx = 0;
+  }
+  const s=sentPool[sentIdx++];
+  sentStageSentences.push(s); // record for retry
+  window._sentCurrent=s;
+  sentAnswered=false;
+  sentHintLevel=0;
+
+  const parts=s.template.split('______');
+  document.getElementById('sentText').innerHTML=
+    parts[0]+'<span class="blank">______</span>'+(parts[1]||'');
+  document.getElementById('sentInput').value='';
+  document.getElementById('sentInput').className='sent-input';
+  document.getElementById('sentFeedback').textContent='';
+  document.getElementById('hintBox').style.display='none';
+  document.getElementById('hintInfo').textContent='';
+
+  const hBtn=document.getElementById('hintBtn');
+  hBtn.textContent='💡 רמז 1';
+  hBtn.disabled=false;
+  hBtn.style.opacity='1';
+
+  // auto-start timer on first question of stage
+  if(sentQNum===0 && !timers.sent.running){
+    toggleTimer('sent');
+  }
+  updateSentUI();
+  setTimeout(()=>document.getElementById('sentInput').focus(),100);
+}
+
+function checkSent(){
+  if(sentAnswered) return;
+  const s=window._sentCurrent;
+  const val=document.getElementById('sentInput').value.trim().toLowerCase();
+  const correct=s.word.toLowerCase();
+  sentAnswered=true;
+
+  const inp=document.getElementById('sentInput');
+  const fb=document.getElementById('sentFeedback');
+
+  if(val===correct){
+    inp.classList.add('correct-input');
+    const pts=Math.max(1, 3-sentHintLevel);
+    fb.style.color='var(--green)';
+    if(sentHintLevel===0) fb.textContent=`✅ נכון! +${pts} נקודות 🌟`;
+    else fb.textContent=`✅ נכון! +${pts} נקודות`;
+    sentStageScore+=pts; sentTotalScore+=pts;
+  } else {
+    inp.classList.add('wrong-input');
+    fb.style.color='var(--red)';
+    fb.textContent='❌ לא נכון. התשובה הנכונה: '+s.word;
+  }
+  sentQNum++;
+  // stop timer if stage finished
+  if(sentQNum>=10){
+    pauseTimer('sent');
+  }
+  // stop timer if stage finished
+  if(sentQNum>=10){
+    pauseTimer('sent');
+  }
+  // auto-start timer on first question of stage
+  if(sentQNum===0 && !timers.sent.running){
+    toggleTimer('sent');
+  }
+  updateSentUI();
+
+  const hBtn=document.getElementById('hintBtn');
+  hBtn.disabled=true; hBtn.style.opacity='.4';
+
+  setTimeout(()=>{
+    if(sentQNum>=10){showSentRound();}
+    else{loadSent();}
+  },1400);
+}
+
+function skipSent(){
+  if(sentAnswered) return;
+  sentAnswered=true;
+  sentQNum++;
+  // stop timer if stage finished
+  if(sentQNum>=10){
+    pauseTimer('sent');
+  }
+  // auto-start timer on first question of stage
+  if(sentQNum===0 && !timers.sent.running){
+    toggleTimer('sent');
+  }
+  updateSentUI();
+  document.getElementById('sentFeedback').textContent='';
+  if(sentQNum>=10){setTimeout(showSentRound,400);}
+  else{loadSent();}
+}
+
+function wordType(w){
+  const he=(w.he||'');
+  const en=(w.en||w.word||'').toLowerCase();
+  if(he.startsWith('ל')) return 'verb';
+  if(en.endsWith('ly')) return 'adverb';
+  if(en.endsWith('ful')||en.endsWith('ous')||en.endsWith('ive')||en.endsWith('al')||en.endsWith('ent')) return 'adj';
+  return 'noun';
+}
+
+
+function showSentHint(){
+  if(sentAnswered) return;
+
+  const s=window._sentCurrent;
+  const hBtn=document.getElementById('hintBtn');
+  const hintBox=document.getElementById('hintBox');
+  const hintTitle=document.getElementById('hintTitle');
+  const hintOpts=document.getElementById('hintOpts');
+  const hintInfo=document.getElementById('hintInfo');
+
+  // ===== Hint 1 =====
+  if(sentHintLevel===0){
+    sentHintLevel=1;
+
+    hintTitle.textContent='💡 רמזים:';
+
+    hintOpts.innerHTML=`
+      <div style="font-size:13px;color:var(--sub);margin-bottom:6px">
+        רמז 1 – תרגום:
+      </div>
+      <div style="font-size:22px;color:var(--accent2);font-weight:700;padding:8px">
+        ${s.he}
+      </div>
+    `;
+
+    hintBox.style.display='block';
+    hintInfo.textContent='שימוש ברמז 1 → תשובה נכונה = 2 נקודות';
+    hintInfo.style.color='var(--accent)';
+    hBtn.textContent='💡 רמז 2';
+    return;
+  }
+
+  // ===== Hint 2 =====
+  if(sentHintLevel===1){
+    sentHintLevel=2;
+
+    const correctWord=s.word;
+
+    // distractors only from existing words list
+    let distractors=shuffle(
+      words
+        .map(w=>w.en)
+        .filter(en=>en.toLowerCase()!==correctWord.toLowerCase())
+    ).slice(0,2);
+
+    const opts=shuffle([correctWord,...distractors]);
+
+    // Append under hint 1 (do NOT replace)
+    hintOpts.innerHTML+=`
+      <div style="width:100%;height:10px"></div>
+      <div style="font-size:13px;color:var(--sub);margin-bottom:6px">
+        רמז 2 – בחר מהאפשרויות:
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;width:100%">
+        ${opts.map(o=>`
+          <div class="hint-opt" onclick="pickHint('${o.replace(/'/g,"\'")}')">
+            ${o}
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    hintInfo.textContent='שימוש ברמז 2 → תשובה נכונה = 1 נקודה בלבד';
+    hintInfo.style.color='var(--red)';
+    hBtn.textContent='אין עוד רמזים';
+    hBtn.disabled=true;
+    hBtn.style.opacity='.4';
+  }
+}
+
+
+function pickHint(opt){
+  document.getElementById('sentInput').value=opt;
+  document.getElementById('sentInput').focus();
+}
+
+function showSentRound(){
+  pauseTimer('sent');
+  document.getElementById('sentPlay').style.display='none';
+  const r=document.getElementById('sentRound');
+  r.style.display='block';
+  document.getElementById('sentRoundScore').textContent=sentStageScore+'/30';
+  document.getElementById('sentRoundMsg').textContent=sentStageScore>=25?'מצויין! 🌟':sentStageScore>=18?'יפה מאוד! 💪':'נסה שוב! 🔁';
+  document.getElementById('sentRoundTime').textContent=getTimerDisplay('sent');
+}
+
+function retrySent(){
+  // Replay exact same 10 sentences in shuffled order
+  sentPool=shuffle([...sentStageSentences]);
+  sentStageSentences=[];
+  sentIdx=0; sentQNum=0; sentStageScore=0;
+  document.getElementById('sentRound').style.display='none';
+  document.getElementById('sentPlay').style.display='block';
+  document.getElementById('hintBox').style.display='none';
+  resetTimer('sent');
+  loadSent();
+}
+
+function continueSent(){
+  sentStageNum++; sentQNum=0; sentStageScore=0; sentStageSentences=[];
+  document.getElementById('sentRound').style.display='none';
+  document.getElementById('sentPlay').style.display='block';
+  resetTimer('sent');
+  loadSent();
+}
+
+function updateSentUI(){
+  // total stages for sentences
+  const _sentTotalStages = Math.max(1, Math.ceil(sentences.length/10));
+  const _sentTotalEl = document.getElementById('sentStageTotal');
+  if(_sentTotalEl) _sentTotalEl.textContent = _sentTotalStages;
+
+  document.getElementById('sentStage').textContent=sentStageNum;
+  document.getElementById('sentQ').textContent=sentQNum;
+  document.getElementById('sentScore').textContent=sentStageScore;
+  document.getElementById('sentTotal').textContent=sentTotalScore;
+  document.getElementById('sentBar').style.width=(sentQNum/10*100)+'%';
+}
+
+// ========== AUDIO ==========
+let audioList=[], audioPos=0, audioRevealed=false;
+
+function startAudio(){
+  audioList=shuffle(words);
+  audioPos=0;
+  resetTimer('audio');
+  show('audio-mode');
+  loadAudio();
+}
+
+function loadAudio(){
+  audioRevealed=false;
+  const w=audioList[audioPos];
+  document.getElementById('audioEn').textContent=w.en;
+  document.getElementById('audioHe').textContent=w.he;
+  document.getElementById('audioHe').style.display='none';
+  document.getElementById('audioRevealBtn').textContent='הצג תרגום עברי 👁';
+  document.getElementById('audioIdx').textContent=audioPos+1;
+  document.getElementById('audioTotal').textContent=audioList.length;
+}
+
+function speakCurrent(){
+  const w=audioList[audioPos];
+  if('speechSynthesis' in window){
+    const u=new SpeechSynthesisUtterance(w.en);
+    u.lang='en-US'; u.rate=0.85;
+    speechSynthesis.cancel();
+    speechSynthesis.speak(u);
+  } else {
+    alert('השמע אינו נתמך בדפדפן זה');
+  }
+}
+
+function toggleReveal(){
+  audioRevealed=!audioRevealed;
+  document.getElementById('audioHe').style.display=audioRevealed?'block':'none';
+  document.getElementById('audioRevealBtn').textContent=audioRevealed?'הסתר עברית 🙈':'הצג תרגום עברי 👁';
+}
+
+function audioNext(){
+  if(audioPos<audioList.length-1){audioPos++;}
+  else{audioPos=0;}
+  loadAudio();
+}
+
+function audioPrev(){
+  if(audioPos>0){audioPos--;}
+  else{audioPos=audioList.length-1;}
+  loadAudio();
+}
+
+function audioShuffle(){
+  audioList=shuffle(words);
+  audioPos=0;
+  loadAudio();
+}
+
+// ========== TEXT MODE ==========
+function startText(){
+  show('text-mode');
+  document.getElementById('freeText').value='';
+  document.getElementById('textFeedback').style.display='none';
+  resetTimer('text');
+  buildWordBank();
+}
+
+function buildWordBank(){
+  const bank=document.getElementById('wordBank');
+  bank.innerHTML=shuffle(words).slice(0,30).map(w=>
+    `<div class="word-chip" data-en="${w.en}">${w.en}</div>`
+  ).join('');
+}
+
+function clearText(){
+  document.getElementById('freeText').value='';
+  document.getElementById('textFeedback').style.display='none';
+  buildWordBank();
+}
+
+function checkFreeText(){
+  const text=document.getElementById('freeText').value.trim();
+  if(!text){alert('אנא כתוב לפחות משפט אחד');return;}
+
+  const fb=document.getElementById('textFeedback');
+  fb.style.display='block';
+
+  const lines=text.split('\n').filter(l=>l.trim());
+  
+  // Find which vocab words are used
+  const usedWords=[];
+  words.forEach(w=>{
+    const re=new RegExp('\\b'+w.en.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'\\b','gi');
+    if(re.test(text)) usedWords.push(w.en);
+  });
+
+  // Simple spell check + highlight
+  let html=`<div class="text-feedback-title">📋 תיקון ובדיקה</div>`;
+  
+  html+=`<div style="margin-bottom:12px;color:var(--accent2);font-size:14px">
+    ✨ מילות אוצר שמצאתי: <b style="color:var(--green)">${usedWords.length>0?usedWords.join(', '):'אף מילה מהרשימה'}</b>
+  </div>`;
+
+  // Common corrections map
+  const corrections={
+    'dont':"don't",'cant':"can't",'wont':"won't",'isnt':"isn't",
+    'wasnt':"wasn't",'didnt':"didn't",'havent':"haven't",
+    'im':"I'm",'ive':"I've",'id':"I'd",'ill':"I'll",
+    'i ':'I ','teh':'the','recieve':'receive','occured':'occurred',
+    'seperate':'separate','definately':'definitely','untill':'until',
+    'alot':'a lot','becuase':'because','freind':'friend','wierd':'weird',
+    'beutiful':'beautiful','excelent':'excellent','adveture':'adventure',
+    'begining':'beginning','successfull':'successful',
+  };
+
+  let corrected=text;
+  const applied=[];
+  Object.entries(corrections).forEach(([wrong,right])=>{
+    const re=new RegExp('\\b'+wrong+'\\b','gi');
+    if(re.test(corrected)){
+      corrected=corrected.replace(re,right);
+      applied.push({wrong,right});
+    }
+  });
+
+  if(applied.length>0){
+    html+=`<div style="margin-bottom:10px;color:var(--sub);font-size:13px">🔧 תיקונים שנמצאו:</div>`;
+    applied.forEach(a=>{
+      html+=`<div class="correction-line"><span class="err-word">${a.wrong}</span> → <span class="corr-word">${a.right}</span></div>`;
+    });
+    html+=`<div style="margin:12px 0;padding:12px;background:var(--card);border-radius:8px;direction:ltr;font-size:16px;line-height:1.8">${corrected}</div>`;
+  } else {
+    html+=`<div class="ok-line">✅ לא נמצאו שגיאות כתיב! כל הכבוד!</div>`;
+  }
+
+  // Encourage
+  if(usedWords.length>=5) html+=`<div style="margin-top:10px;color:var(--accent);font-weight:700">🏆 מדהים! השתמשת ב-${usedWords.length} מילות אוצר!</div>`;
+  else if(usedWords.length>=3) html+=`<div style="margin-top:10px;color:var(--green)">⭐ יפה מאוד! נסה להכניס עוד מילות אוצר.</div>`;
+  else if(usedWords.length>0) html+=`<div style="margin-top:10px;color:var(--sub)">💡 נסה להשתמש ביותר מילות אוצר מהרשימה.</div>`;
+
+  fb.innerHTML=html;
+
+  // Highlight used chips in word bank
+  document.querySelectorAll('.word-chip').forEach(chip=>{
+    if(usedWords.includes(chip.dataset.en)) chip.classList.add('used');
+    else chip.classList.remove('used');
+  });
+}
+// ========== TIMER ENGINE ==========
+function fmtTime(s){
+  const m=Math.floor(s/60);
+  const sec=s%60;
+  return String(m).padStart(2,'0')+':'+String(sec).padStart(2,'0');
+}
+
+function toggleTimer(key){
+  const t=timers[key];
+  const btn=document.getElementById(key+'TimerBtn');
+  const disp=document.getElementById(key+'TimerDisplay');
+  if(t.running){
+    clearInterval(t.interval);
+    t.running=false;
+    if(btn){btn.textContent='▶ שעון';btn.classList.remove('running');}
+  } else {
+    t.running=true;
+    if(btn){btn.textContent='⏸ עצור';btn.classList.add('running');}
+    t.interval=setInterval(()=>{
+      t.seconds++;
+      if(disp) disp.textContent=fmtTime(t.seconds);
+    },1000);
+  }
+}
+
+function resetTimer(key){
+  const t=timers[key];
+  clearInterval(t.interval);
+  t.running=false;
+  t.seconds=0;
+  const disp=document.getElementById(key+'TimerDisplay');
+  if(disp) disp.textContent='00:00';
+  const btn=document.getElementById(key+'TimerBtn');
+  if(btn){btn.textContent='▶ שעון';btn.classList.remove('running');}
+}
+
+function pauseTimer(key){
+  const t=timers[key];
+  if(t.running){
+    clearInterval(t.interval);
+    t.running=false;
+    const btn=document.getElementById(key+'TimerBtn');
+    if(btn){btn.textContent='▶ שעון';btn.classList.remove('running');}
+  }
+}
+
+function getTimerDisplay(key){return fmtTime(timers[key].seconds);}
+
+// ========== CUSTOM WORDS ==========
+const defaultWords=[...words];
+const defaultSentences=[...sentences];
+
+function showCustomWords(){
+  show('custom-words');
+  document.getElementById('customFeedback').textContent='';
+  document.getElementById('fileStatus').textContent='';
+  document.getElementById('customLoading').style.display='none';
+  document.getElementById('customBtns').style.display='flex';
+  document.getElementById('customInput').disabled=false;
+  // Load saved API key
+  const saved=getApiKey();
+  if(saved) document.getElementById('apiKeyInput').value=saved;
+}
+
+async function handleFileUpload(event){
+  const file=event.target.files[0];
+  if(!file) return;
+  const statusEl=document.getElementById('fileStatus');
+  statusEl.style.color='var(--accent2)';
+  statusEl.textContent='קורא קובץ...';
+
+  try{
+    let text='';
+    if(file.name.endsWith('.txt')){
+      text=await file.text();
+
+    } else if(file.name.endsWith('.docx')||file.name.endsWith('.doc')){
+      const arrayBuffer=await file.arrayBuffer();
+      if(typeof mammoth!=='undefined'){
+        const result=await mammoth.extractRawText({arrayBuffer});
+        text=result.value;
+      } else {
+        const decoder=new TextDecoder('utf-8');
+        const raw=decoder.decode(arrayBuffer);
+        text=raw.replace(/[^\x20-\x7E\n\r\u0590-\u05FF]/g,' ').replace(/\s+/g,' ').trim();
+      }
+
+    } else if(file.name.endsWith('.pdf')){
+      const arrayBuffer=await file.arrayBuffer();
+      if(typeof pdfjsLib!=='undefined'){
+        pdfjsLib.GlobalWorkerOptions.workerSrc=
+          'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        const pdf=await pdfjsLib.getDocument({data:arrayBuffer}).promise;
+        const pages=[];
+        for(let i=1;i<=pdf.numPages;i++){
+          const page=await pdf.getPage(i);
+          const content=await page.getTextContent();
+          pages.push(content.items.map(item=>item.str).join(' '));
+        }
+        text=pages.join('\n');
+      } else {
+        statusEl.style.color='var(--red)';
+        statusEl.textContent='⚠️ לא ניתן לטעון PDF כרגע. נסה שוב.';
+        return;
+      }
+    }
+
+    if(!text.trim()){
+      statusEl.style.color='var(--red)';
+      statusEl.textContent='⚠️ לא ניתן לקרוא את הקובץ';
+      return;
+    }
+
+    document.getElementById('customInput').value=text;
+    statusEl.style.color='var(--green)';
+    statusEl.textContent=`✅ הקובץ "${file.name}" נטען — בדוק את התוכן ולחץ "טען מילים"`;
+  } catch(e){
+    statusEl.style.color='var(--red)';
+    statusEl.textContent='⚠️ שגיאה בקריאת הקובץ. נסה להעתיק ולהדביק ידנית.';
+  }
+  event.target.value='';
+}
+
+function parseWordList(raw){
+  const parsed=[];
+  const separators=[/\s*=\s*/,/\s*-\s*/,/\s*:\s*/,/\s*\|\s*/,/\t/];
+  raw.split('\n').forEach(line=>{
+    line=line.trim();
+    if(!line) return;
+    for(const sep of separators){
+      const parts=line.split(sep);
+      if(parts.length>=2){
+        const en=parts[0].trim();
+        const he=parts.slice(1).join(' ').trim();
+        if(en && he){parsed.push({en,he});break;}
+      }
+    }
+  });
+  return parsed;
+}
+
+// ===== WORD BANK FOR DISTRACTORS (not AI, built-in) =====
+const WORD_BANK={
+  verb:['run','jump','think','write','speak','listen','read','travel','work','study',
+        'cook','clean','drive','walk','swim','sing','dance','laugh','cry','sleep',
+        'wake','eat','drink','play','teach','learn','build','fix','open','close',
+        'find','lose','send','receive','buy','sell','help','ask','answer','try',
+        'stop','start','finish','remember','forget','explain','describe','choose',
+        'decide','change','move','stay','leave','arrive','return','visit','meet',
+        'see','hear','feel','touch','smell','believe','understand','realize','know'],
+  noun:['book','table','chair','window','door','school','teacher','student','friend',
+        'family','house','garden','park','city','village','country','market','shop',
+        'doctor','nurse','hospital','medicine','problem','solution','idea','plan',
+        'story','picture','letter','word','sentence','question','answer','lesson',
+        'paper','pen','bag','phone','computer','camera','car','bicycle','train',
+        'airplane','hotel','restaurant','food','water','coffee','tree','flower',
+        'animal','dog','cat','bird','fish','mountain','river','beach','forest',
+        'weather','rain','snow','sun','wind','cloud','season','morning','evening'],
+  adj:['happy','sad','angry','tired','excited','bored','nervous','calm','busy',
+       'free','strong','weak','fast','slow','big','small','tall','short','young',
+       'old','new','old','hot','cold','warm','cool','clean','dirty','easy','hard',
+       'loud','quiet','bright','dark','beautiful','ugly','interesting','boring',
+       'important','simple','complex','careful','careless','kind','rude','honest',
+       'friendly','serious','funny','clever','stupid','healthy','sick','safe','dangerous']
+};
+
+function wordType(w){
+  const he=(w.he||w||'');
+  const en=(w.en||w||'').toLowerCase();
+  if(typeof he==='string' && he.startsWith('ל')) return 'verb';
+  if(en.endsWith('ly')) return 'adverb';
+  if(en.endsWith('ful')||en.endsWith('ous')||en.endsWith('ive')||en.endsWith('al')||en.endsWith('ent')) return 'adj';
+  return 'noun';
+}
+
+function saveApiKey(val){
+  try{ localStorage.setItem('anthropic_key', val); } catch(e){}
+}
+function getApiKey(){
+  try{ return localStorage.getItem('anthropic_key')||''; } catch(e){ return ''; }
+}
+
+async function generateSentencesAI(wordList, apiKey){
+  const allSentences=[];
+  const batchSize=20;
+  for(let i=0;i<wordList.length;i+=batchSize){
+    const batch=wordList.slice(i,i+batchSize);
+    document.getElementById('loadingProgress').textContent=
+      `יוצר משפטים ${Math.min(i+batchSize,wordList.length)}/${wordList.length}...`;
+    const wordLines=batch.map(w=>`${w.en} = ${w.he}`).join('\n');
+    try{
+      const res=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version':'2023-06-01',
+          'anthropic-dangerous-direct-browser-access':'true'
+        },
+        body:JSON.stringify({
+          model:'claude-haiku-4-5-20251001',
+          max_tokens:2000,
+          messages:[{role:'user',content:
+`For each English word below, write one natural English sentence where that specific word is replaced with ______.
+The sentence must make sense ONLY with that exact word in the blank — not with any other word from the list.
+Keep sentences simple (A2-B1 level). Return ONLY a valid JSON array, no markdown.
+Format: [{"word":"exact english word","template":"sentence with ______","he":"hebrew"}]
+Words:\n${wordLines}`}]
+        })
+      });
+      const data=await res.json();
+      if(data.error) throw new Error(data.error.message);
+      const raw=data.content.map(c=>c.text||'').join('');
+      const clean=raw.replace(/```json|```/g,'').trim();
+      JSON.parse(clean).forEach(s=>allSentences.push(s));
+    } catch(e){
+      // Fallback to local generator for this batch
+      generateSentencesLocal(batch).forEach(s=>allSentences.push(s));
+    }
+  }
+  return allSentences;
+}
+
+function generateSentencesLocal(wordList){
+  function detectCategory(en, he){
+    const h=he;
+    if(h.startsWith('ל')) return 'verb';
+    if(/גוף|יד|רגל|ראש|עין|אוזן|פה|אף|לב|בטן|גב|עצם|שריר|עור|דם|שיניים|שיער/.test(h)) return 'body';
+    if(/שמח|עצוב|כועס|פחד|אהב|שנא|רגש|הרגש|חרד|מתוסכל|גאה|מאוכזב|מבויש|מתרגש|קנאה|אשמה|דאגה|עצבנ/.test(h)) return 'emotion';
+    if(/עץ|יער|ים|נהר|הר|שמש|גשם|רוח|פרח|עלה|אדמה|אבן|חוף|שדה|שמים|ענן|כוכב|ירח/.test(h)) return 'nature';
+    if(/כלב|חתול|ציפור|דג|סוס|פרה|חיה|חרק|נחש|ארנב|אריה|פיל|דוב/.test(h)) return 'animal';
+    if(/אוכל|שתייה|לחם|בשר|ירק|פרי|מים|קפה|חלב|מתוק|מלוח|ארוחה/.test(h)) return 'food';
+    if(/לימוד|ספר|שיעור|מורה|תלמיד|בית ספר|כיתה|מבחן|ציון/.test(h)) return 'school';
+    if(/עבוד|משרה|מקצוע|שכר|מנהל|עובד|חברה|פגישה|תפקיד/.test(h)) return 'work';
+    if(/זמן|שעה|יום|לילה|בוקר|ערב|שבוע|חודש|שנה|מהיר|איטי|מוקדם|מאוחר/.test(h)) return 'time';
+    if(/מקום|עיר|כפר|רחוב|בית|חדר|מדינה|ארץ|שכונה|גבול/.test(h)) return 'place';
+    if(/אדם|חבר|משפחה|ילד|הורה|אח|אחות|בעל|אישה|שכן|זר/.test(h)) return 'people';
+    if(/כסף|מחיר|קנה|מכר|עלות|תקציב|חוב|עושר|עני/.test(h)) return 'money';
+    if(/בריאות|חולה|רפואה|רופא|תרופה|כאב|ניתוח|בית חולים/.test(h)) return 'health';
+    if(/טכנולוג|מחשב|טלפון|אינטרנט|אפליקציה|תוכנה|מסך/.test(h)) return 'tech';
+    return 'general';
+  }
+  const templates={
+    verb:[`Every morning she needs to ______ before going to work.`,`He tried to ______ but it was much harder than he expected.`,`Can you ______ this for me please?`,`She learned how to ______ at a very young age.`,`It is important to ______ carefully in this situation.`,`He forgot to ______ and got into trouble.`,`They decided to ______ together as a team.`,`She was the first person to ______ in that situation.`],
+    body:[`The doctor asked him to point to where his ______ hurt.`,`She injured her ______ during the match.`,`He felt a sharp pain in his ______ after the fall.`,`The ______ is one of the most important parts of the human body.`],
+    emotion:[`She could not hide her ______ when she heard the news.`,`He felt deep ______ after losing the competition.`,`A sudden feeling of ______ came over her when she saw him.`,`His ______ was clear from the expression on his face.`],
+    nature:[`We sat by the ______ and watched the sunset.`,`The ______ was so beautiful that everyone stopped to look.`,`After the storm, the ______ looked completely different.`,`She picked a ______ from the garden for her mother.`],
+    animal:[`The ______ ran across the field and disappeared into the trees.`,`She had always wanted a ______ as a pet.`,`The children were amazed when they saw the ______ up close.`,`He watched the ______ carefully from a safe distance.`],
+    food:[`She put the ______ on the table and everyone sat down to eat.`,`He had never tasted ______ like that before.`,`The ______ smelled wonderful coming from the kitchen.`,`After exercise she was hungry and wanted some ______.`],
+    school:[`The teacher wrote the answer on the board and asked about the ______.`,`She studied for hours before the ______ the next morning.`,`He brought his ______ to every lesson without fail.`,`The ______ was difficult but she passed with a high grade.`],
+    work:[`She has worked in her current ______ for over five years.`,`The manager called an important ______ for all the staff.`,`He worked hard to get a promotion in his ______.`,`She was very good at her ______ and everyone respected her.`],
+    time:[`She arrived at the ______ and there was no one there.`,`He always finishes his homework at the same ______ every day.`,`They had very little ______ left to complete the project.`,`She woke up early in the ______ to prepare for the trip.`],
+    place:[`They moved to a new ______ on the other side of the city.`,`She visited the ______ for the first time and loved it.`,`He described the ______ in great detail to his friends.`,`The ______ was much bigger than she had imagined.`],
+    people:[`She introduced her ______ to everyone at the party.`,`He met his best ______ at school twenty years ago.`,`The ______ was very kind and helped her find the way.`,`She wanted to do something special for her ______.`],
+    money:[`He saved enough ______ to buy the bicycle he wanted.`,`The ______ of the apartment was higher than they expected.`,`She carefully checked the ______ before making a decision.`,`He did not have enough ______ to pay for the meal.`],
+    health:[`The doctor gave him advice to improve his ______.`,`She took the ______ every morning as the doctor instructed.`,`He went to the hospital because of a serious ______ problem.`,`Good sleep and exercise are important for your ______.`],
+    tech:[`She used her ______ to find directions to the restaurant.`,`He spent hours trying to fix the ______ problem.`,`The new ______ made her work much faster and easier.`,`She could not imagine her life without her ______.`],
+    general:[`She saw a ______ for the first time and was amazed.`,`He had never encountered a ______ like this before.`,`The ______ was exactly what she had been looking for.`,`He described the ______ in detail to his friend.`,`She put the ______ carefully in her bag.`,`Everyone in the room noticed the ______ immediately.`,`He wrote about the ______ in his notebook.`,`She bought a ______ from the market on her way home.`],
+  };
+  return wordList.map(w=>{
+    const cat=detectCategory(w.en,w.he);
+    const pool=templates[cat]||templates.general;
+    const hash=w.en.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+    return {word:w.en, template:pool[hash%pool.length], he:w.he, type:wordType(w)};
+  });
+}
+
+async function loadCustomWords(){
+  const raw=document.getElementById('customInput').value.trim();
+  if(!raw){
+    document.getElementById('customFeedback').style.color='var(--red)';
+    document.getElementById('customFeedback').textContent='⚠️ אנא הדבק רשימת מילים';
+    return;
+  }
+  const parsed=parseWordList(raw);
+  if(parsed.length<2){
+    document.getElementById('customFeedback').style.color='var(--red)';
+    document.getElementById('customFeedback').textContent='⚠️ לא נמצאו מילים. ודא שהפורמט נכון (מילה = תרגום)';
+    return;
+  }
+
+  document.getElementById('customBtns').style.display='none';
+  document.getElementById('customLoading').style.display='block';
+  document.getElementById('customFeedback').textContent='';
+  document.getElementById('customInput').disabled=true;
+
+  const apiKey=document.getElementById('apiKeyInput').value.trim()||getApiKey();
+  let newSentences;
+
+  if(apiKey){
+    document.getElementById('loadingProgress').textContent='מתחבר ל-AI...';
+    newSentences=await generateSentencesAI(parsed, apiKey);
+    saveApiKey(apiKey);
+  } else {
+    document.getElementById('loadingProgress').textContent=`מעבד ${parsed.length} מילים...`;
+    await new Promise(r=>setTimeout(r,300));
+    newSentences=generateSentencesLocal(parsed);
+  }
+
+  words.length=0;
+  parsed.forEach(w=>words.push(w));
+  sentences.length=0;
+  newSentences.forEach(s=>sentences.push(s));
+
+  updateMCQStageCount();
+  updateWordCount();
+  document.getElementById('menuSub').textContent=`${words.length} מילים מותאמות אישית | 4 מצבי תרגול`;
+  document.getElementById('customLoading').style.display='none';
+  document.getElementById('customFeedback').style.color='var(--green)';
+  document.getElementById('customFeedback').textContent=`✅ נטענו ${parsed.length} מילים ו-${newSentences.length} משפטים!`;
+  document.getElementById('customBtns').style.display='flex';
+  document.getElementById('customInput').disabled=false;
+
+  setTimeout(()=>goMenu(),1000);
+}
+
+function resetToDefault(){
+  words.length=0;
+  defaultWords.forEach(w=>words.push(w));
+  sentences.length=0;
+  defaultSentences.forEach(s=>sentences.push(s));
+  updateMCQStageCount();
+  updateWordCount();
+  document.getElementById('menuSub').textContent='111 מילים | 4 מצבי תרגול';
+  document.getElementById('customInput').value='';
+  document.getElementById('customFeedback').style.color='var(--green)';
+  document.getElementById('customFeedback').textContent='✅ חזרת לרשימת המילים המקורית';
+  setTimeout(()=>goMenu(),800);
+}
+
+function updateMCQStageCount(){
+  const totalStages = Math.max(1, Math.ceil(words.length/10));
+  const el = document.getElementById('mcqMenuStages');
+  if(el) el.textContent = totalStages;
+}
+
+updateMCQStageCount();
+
+function updateWordCount(){
+  const el=document.getElementById('wordCount');
+  if(el) el.textContent = words.length;
+}
+
+updateWordCount();
+
+function showMCQSummary(){
+  const box=document.getElementById('mcqSummaryBox');
+  if(!box) return;
+  if(mcqMistakes.length===0){
+    box.innerHTML='🎉 לא היו טעויות בשלב הזה!';
+  }else{
+    box.innerHTML='<b>טעויות בשלב:</b><br>'+
+      mcqMistakes.map(w=>`• ${w.en} → ${w.he}`).join('<br>');
+  }
+  box.style.display='block';
+}
+
+
+function ensureSentencesCoverage(){
+  if(sentences.length >= words.length) return;
+
+  const existing = new Set(sentences.map(s=>s.word.toLowerCase()));
+  words.forEach(w=>{
+    if(!existing.has(w.en.toLowerCase())){
+      sentences.push({
+        word:w.en,
+        template:`I often use ______ in my daily life.`,
+        he:w.he
+      });
+    }
+  });
+}
+
+</script>
